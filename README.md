@@ -44,7 +44,7 @@ You'll need the following:
 * [Git](https://git-scm.com/downloads)
 * [NodeJS](https://nodejs.org/)
 * Yarn (install with `npm i -g yarn`)
-* [Docker Desktop](https://www.docker.com/get-started)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
 Once you've installed the above, run the following to get started:
 ```sh
