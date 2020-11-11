@@ -2,6 +2,10 @@
 
 A web server for downloading media. Docker ready.
 
+-- WORK IN PROGRESS
+
+The ability to download subtitles is still in development
+
 # Docker
 
 -- WORK IN PROGRESS

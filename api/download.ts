@@ -48,20 +48,21 @@ export async function downloadSubtitles(
 ) {
   const metadata = await getMetadata(url);
   return await new Promise((resolve, reject) => {
-    youtubedl.getSubs(
-      url,
-      {
-        lang: options.language || "en",
-      },
-      (err, output) => {
-        if (err) reject(err);
-        else {
-          setAttachment(res, metadata, options.format);
-          res.send(new Blob(output));
-          resolve();
-        }
-      }
-    );
+    resolve();
+    // youtubedl.getSubs(
+    //   url,
+    //   {
+    //     lang: options.language || "en",
+    //   },
+    //   (err, output) => {
+    //     if (err) reject(err);
+    //     else {
+    //       setAttachment(res, metadata, options.format);
+    //       res.send(new Blob(output));
+    //       resolve();
+    //     }
+    //   }
+    // );
   });
 }
 

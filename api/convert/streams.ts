@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextApiResponse } from "next";
 import youtubedl from "youtube-dl";
 import { ConversionOptions, ConversionStreams } from "../types";
 import { FfmpegConversionOptions, ffmpegConvert } from "./ffmpeg";
@@ -8,7 +8,7 @@ const youtubedlArgs = ["--no-playlist", "--no-check-certificate", "-f", "best"];
 
 export async function youtubeToStream(
   url: string,
-  output: Response<Blob>,
+  output: NextApiResponse<Blob>,
   options: ConversionOptions
 ) {
   const videoStream = youtubedl(url, youtubedlArgs, {});

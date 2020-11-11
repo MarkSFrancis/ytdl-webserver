@@ -68,6 +68,7 @@ export function IndexPage() {
     });
   }
 
+  const footerHeight = "56px";
   return (
     <>
       <Head>
@@ -77,7 +78,7 @@ export function IndexPage() {
         <Container>
           <Jumbotron
             className="d-flex justify-content-center"
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: `calc(100vh - ${footerHeight})`, marginBottom: footerHeight }}
           >
             <div className="d-flex flex-column" style={{ flexBasis: "500px" }}>
               <div>
