@@ -2,6 +2,8 @@
 
 A web server for downloading media. Docker ready.
 
+![preview](./preview.png)
+
 # Supported Sites
 
 This app capable of downloading from many websites including (but not limited to): 
