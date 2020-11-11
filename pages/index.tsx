@@ -1,4 +1,11 @@
+import { AxiosError } from "axios";
+import Head from "next/head";
 import React, { useState } from "react";
+import { Container, Jumbotron } from "react-bootstrap";
+import { DownloadIcon } from "../components/DownloadIcon";
+import { DownloadsList } from "../components/DownloadsList";
+import { Footer } from "../components/Footer";
+import { NewDownload } from "../components/NewDownload";
 import { downloadPost } from "../components/utils/http";
 import {
   DownloadAudioOptions,
@@ -6,22 +13,13 @@ import {
   DownloadVideoOptions,
   Video,
 } from "../utils/types";
-import { DownloadIcon } from "../components/DownloadIcon";
-import { DownloadsList } from "../components/DownloadsList";
-import { Footer } from "../components/Footer";
-import { NewDownload } from "../components/NewDownload";
-import { Container, Jumbotron } from "react-bootstrap";
-import Head from "next/head";
 
 export function IndexPage() {
   const [downloads, setDownloads] = useState<Video[]>([]);
 
-  function clearCompletedVideos() {
-    setDownloads((videos) => videos.filter((v) => v.downloading));
-  }
-
   async function download(
-    apiUrl: string,
+    url: string,
+    type: string,
     body?:
       | DownloadSubtitlesOptions
       | DownloadAudioOptions
@@ -29,38 +27,42 @@ export function IndexPage() {
   ) {
     const newVideo: Video = {
       id: +new Date(),
-      url: apiUrl,
-      downloading: true,
+      url: url,
     };
 
     setDownloads((videos) => [...videos, newVideo]);
 
-    await downloadPost(apiUrl, body);
-    setDownloads((videos) =>
-      videos.map((video) => {
-        if (video !== newVideo) return video;
-        return { ...newVideo, downloading: false };
+    downloadPost(`/api/${encodeURIComponent(url)}/download/${type}`, body)
+      .then(() => {
+        setDownloads((videos) => videos.filter((video) => video !== newVideo));
       })
-    );
+      .catch((e: AxiosError) => {
+        setDownloads((videos) =>
+          videos.map((v) => {
+            if (v !== newVideo) return v;
+            return {
+              ...v,
+              error: e.message,
+            };
+          })
+        );
+      });
   }
 
   function downloadAudio(url: string, format?: string) {
-    const apiUrl = `/api/${encodeURIComponent(url)}/audio`;
-    download(apiUrl, {
+    download(url, "audio", {
       format,
     });
   }
 
   function downloadVideo(url: string, format?: string) {
-    const apiUrl = `/api/${encodeURIComponent(url)}/video`;
-    download(apiUrl, {
+    download(url, "video", {
       format,
     });
   }
 
   function downloadSubtitles(url: string, language?: string, format?: string) {
-    const apiUrl = `/api/${encodeURIComponent(url)}/subtitles`;
-    download(apiUrl, {
+    download(url, "subtitles", {
       format,
       language,
     });
@@ -71,27 +73,30 @@ export function IndexPage() {
       <Head>
         <title>Youtube Download</title>
       </Head>
-      <div
-        className="d-flex flex-column justify-content-between"
-        style={{ minHeight: "100vh" }}
-      >
-        <div></div>
+      <div style={{ minHeight: "100vh" }}>
         <Container>
-          <Jumbotron className="d-flex justify-content-center flex-column">
-            <div className="mb-4">
-              <DownloadIcon />
+          <Jumbotron
+            className="d-flex justify-content-center"
+            style={{ minHeight: "100vh" }}
+          >
+            <div className="d-flex flex-column" style={{ flexBasis: "500px" }}>
+              <div>
+                <DownloadIcon />
+              </div>
+              <div className="mt-4">
+                <NewDownload
+                  onDownloadAudio={(url, format) => downloadAudio(url, format)}
+                  onDownloadVideo={(url, format) => downloadVideo(url, format)}
+                  onDownloadSubtitles={(url, language, format) =>
+                    downloadSubtitles(url, language, format)
+                  }
+                />
+              </div>
+              <div>
+                <hr />
+                <DownloadsList videos={downloads} />
+              </div>
             </div>
-            <NewDownload
-              onDownloadAudio={(url, format) => downloadAudio(url, format)}
-              onDownloadVideo={(url, format) => downloadVideo(url, format)}
-              onDownloadSubtitles={(url, language, format) =>
-                downloadSubtitles(url, language, format)
-              }
-            />
-            <DownloadsList
-              videos={downloads}
-              onClear={() => clearCompletedVideos()}
-            />
           </Jumbotron>
         </Container>
         <Footer />

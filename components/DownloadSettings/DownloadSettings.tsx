@@ -1,71 +1,82 @@
-import React, { useState } from "react";
-import { Tab, Tabs } from "react-bootstrap";
-import {
-  DownloadAudioOptions,
-  DownloadSubtitlesOptions,
-  DownloadVideoOptions,
-} from "../../api/types";
+import React from "react";
+import { Button, Tab, Tabs } from "react-bootstrap";
+import { DownloadType, SavedSettings } from "../utils/hooks/settingsStorage";
 import { AudioSettings } from "./AudioSettings";
 import { SubtitlesSettings } from "./SubtitlesSettings";
 import { VideoSettings } from "./VideoSettings";
 
-export type DownloadType = "Video" | "Audio" | "Subtitles";
-export type DownloadOptions =
-  | DownloadAudioOptions
-  | DownloadVideoOptions
-  | DownloadSubtitlesOptions;
-
 export interface DownloadSettingsProps {
-  settings: DownloadOptions;
-  onSettingsChanged: (settings: DownloadOptions) => void;
-  downloadType: DownloadType;
-  onDownloadTypeChanged: (type: DownloadType) => void;
+  settings: SavedSettings;
+  onSettingsChanged: (settings: SavedSettings) => void;
+  isValid: boolean;
 }
 
 export function DownloadSettings(props: DownloadSettingsProps) {
-  const [audioFormat, setAudioFormat] = useState<string>();
-  const [videoFormat, setVideoFormat] = useState<string>();
-  const [subsFormat, setSubsFormat] = useState<string>();
-  const [subsLanguage, setSubsLanguage] = useState<string>();
-
-  function onSettingChanged(key: string, newSettings: DownloadOptions) {
-    if (key === props.downloadType) {
-      props.onSettingsChanged(newSettings);
-    }
+  function update<T extends keyof SavedSettings>(
+    key: T,
+    newSettings: SavedSettings[T]
+  ) {
+    props.onSettingsChanged({
+      ...props.settings,
+      [key]: newSettings,
+    });
   }
 
   return (
-    <Tabs defaultActiveKey="audio">
-      <Tab eventKey="audio" title="Audio" style={{ background: "white" }}>
-        <div className="p-4">
+    <Tabs
+      defaultActiveKey={DownloadType.Audio}
+      onSelect={(t: DownloadType) => update("mode", t)}
+    >
+      <Tab
+        eventKey={DownloadType.Audio}
+        title="Audio"
+        style={{ background: "white" }}
+      >
+        <TabContents {...props}>
           <AudioSettings
-            format={audioFormat}
-            onFormatChanged={(f) => setAudioFormat(f)}
+            settings={props.settings.audio || {}}
+            onSettingsChanged={(s) => update("audio", s)}
           />
-        </div>
-      </Tab>
-      <Tab eventKey="video" title="Video" style={{ background: "white" }}>
-        <div className="p-4">
-          <VideoSettings
-            format={videoFormat}
-            onFormatChanged={(f) => setVideoFormat(f)}
-          />
-        </div>
+        </TabContents>
       </Tab>
       <Tab
-        eventKey="subtitles"
+        eventKey={DownloadType.Video}
+        title="Video"
+        style={{ background: "white" }}
+      >
+        <TabContents {...props}>
+          <VideoSettings
+            settings={props.settings.video || {}}
+            onSettingsChanged={(s) => update("video", s)}
+          />
+        </TabContents>
+      </Tab>
+      <Tab
+        eventKey={DownloadType.Subs}
         title="Subtitles"
         style={{ background: "white" }}
       >
-        <div className="p-4">
+        <TabContents {...props}>
           <SubtitlesSettings
-            format={subsFormat}
-            onFormatChanged={(f) => setSubsFormat(f)}
-            language={subsLanguage}
-            onLanguageChanged={(l) => setSubsLanguage(l)}
+            settings={props.settings.subs || {}}
+            onSettingsChanged={(s) => update("subs", s)}
           />
-        </div>
+        </TabContents>
       </Tab>
     </Tabs>
+  );
+}
+
+function TabContents(props: {
+  children: React.ReactElement;
+  isValid: boolean;
+}) {
+  return (
+    <div className="p-4">
+      {props.children}
+      <Button type="submit" variant="primary" disabled={!props.isValid}>
+        Download
+      </Button>
+    </div>
   );
 }

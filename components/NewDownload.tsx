@@ -1,17 +1,8 @@
-import React, { FormEvent, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, { FormEvent, useEffect, useState } from "react";
+import { Form } from "react-bootstrap";
 import validator from "validator";
-import {
-  DownloadAudioOptions,
-  DownloadSubtitlesOptions,
-  DownloadVideoOptions,
-} from "../api/types";
-import {
-  DownloadOptions,
-  DownloadSettings,
-  DownloadType,
-} from "./DownloadSettings";
-import { useMounted } from "./utils/hooks";
+import { DownloadSettings } from "./DownloadSettings";
+import { DownloadType, useSettingsStore } from "./utils/hooks/settingsStorage";
 
 export interface DownloadFormProps {
   onDownloadAudio: (url: string, format?: string) => void;
@@ -24,54 +15,42 @@ export interface DownloadFormProps {
 }
 
 export function NewDownload(props: DownloadFormProps) {
-  const isMounted = useMounted();
   const [url, setUrl] = useState("");
-  const [type, setType] = useState<DownloadType>("Audio");
-  const [settings, setSettings] = useState<DownloadOptions>();
-  const [error, setError] = useState("");
-
-  function showError(msg: string) {
-    setError(msg);
-    setTimeout(() => {
-      // Check message hasn't changed
-      if (isMounted() && error === msg) {
-        setError("");
-      }
-    }, 2000);
-  }
+  const [settings, setSettings] = useSettingsStore();
+  const [isValid, setIsValid] = useState(false);
 
   function validate() {
     if (url.length === 0) {
       return false;
     }
 
-    if (!validator.isURL(url)) {
-      showError("Invalid URL");
-      return false;
-    } else return true;
+    return validator.isURL(url);
   }
+
+  useEffect(() => {
+    setIsValid(validate());
+  }, [url]);
 
   function startDownload(e: FormEvent) {
     e.preventDefault();
-    if (!validate()) return;
 
-    switch (type) {
-      case "Audio": {
-        const audioSettings = settings as DownloadAudioOptions;
-        props.onDownloadAudio(url, audioSettings.format);
+    switch (settings.settings.mode) {
+      case DownloadType.Audio: {
+        const audioSettings = settings.settings.audio;
+        props.onDownloadAudio(url, audioSettings?.format);
         break;
       }
-      case "Video": {
-        const videoSettings = settings as DownloadVideoOptions;
-        props.onDownloadVideo(url, videoSettings.format);
+      case DownloadType.Video: {
+        const videoSettings = settings.settings.video;
+        props.onDownloadVideo(url, videoSettings?.format);
         break;
       }
-      case "Subtitles": {
-        const subSettings = settings as DownloadSubtitlesOptions;
+      case DownloadType.Subs: {
+        const subSettings = settings.settings.subs;
         props.onDownloadSubtitles(
           url,
-          subSettings.language,
-          subSettings.format
+          subSettings?.language,
+          subSettings?.format
         );
         break;
       }
@@ -85,6 +64,7 @@ export function NewDownload(props: DownloadFormProps) {
     >
       <div style={{ flexBasis: "500px" }}>
         <Form.Group>
+          <Form.Label>URL</Form.Label>
           <Form.Control
             autoFocus
             placeholder="https://www.youtube.com/watch?v=video_id"
@@ -92,23 +72,16 @@ export function NewDownload(props: DownloadFormProps) {
             onChange={(e) => setUrl(e.target.value)}
           />
         </Form.Group>
-        <div className="my-4">
-          <DownloadSettings
-            settings={settings}
-            onSettingsChanged={(s) => setSettings(s)}
-            downloadType={type}
-            onDownloadTypeChanged={(t) => setType(t)}
-          />
-        </div>
-        <div>
-          <Button
-            type="submit"
-            variant="primary"
-            onClick={() => setType("Audio")}
-          >
-            Download
-          </Button>
-        </div>
+        <Form.Group className="mt-3">
+          <Form.Label>Settings</Form.Label>
+          {settings && (
+            <DownloadSettings
+              settings={settings.settings}
+              onSettingsChanged={(s) => setSettings(s)}
+              isValid={isValid}
+            />
+          )}
+        </Form.Group>
       </div>
     </Form>
   );

@@ -1,7 +1,7 @@
 export interface Video {
   id: number;
   url: string;
-  downloading: boolean;
+  error?: string;
 }
 
 export interface DownloadAudioOptions {
