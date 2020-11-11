@@ -2,29 +2,9 @@
 
 A web server for downloading media. Docker ready.
 
--- WORK IN PROGRESS
-
-The ability to download subtitles is still in development
-
-# Docker
-
--- WORK IN PROGRESS
-
-This app is available for download as a docker image
-
-## Docker CLI
-```sh
-
-```
-
-## Docker Compose
-```yml
-
-```
-
 # Supported Sites
 
-This app capable of downloading from many other websites besides YouTube, including (but not limited to): 
+This app capable of downloading from many websites including (but not limited to): 
 * Bandcamp
 * BBC iPlayer
 * Crunchy Roll
@@ -34,6 +14,26 @@ This app capable of downloading from many other websites besides YouTube, includ
 * Soundcloud
 * Twitch
 * Vimeo
+* YouTube
+
+# Docker
+
+This app is available for download as a [docker image](https://hub.docker.com/r/marksfrancis/ytdl-webserver).
+
+### docker cli
+```sh
+docker run -p 3000:3000 marksfrancis/ytdl-webserver
+```
+
+### docker-compose
+```yml
+version: "3.8"
+services:
+  ytdlwebserver:
+    ports: 
+      - "3000:3000"
+    image: marksfrancis/ytdl-webserver
+```
 
 # Special Thanks
 

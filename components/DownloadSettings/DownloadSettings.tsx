@@ -51,7 +51,7 @@ export function DownloadSettings(props: DownloadSettingsProps) {
           />
         </TabContents>
       </Tab>
-      <Tab
+      {/* <Tab
         eventKey={DownloadType.Subs}
         title="Subtitles"
         style={{ background: "white" }}
@@ -62,7 +62,7 @@ export function DownloadSettings(props: DownloadSettingsProps) {
             onSettingsChanged={(s) => update("subs", s)}
           />
         </TabContents>
-      </Tab>
+      </Tab> */}
     </Tabs>
   );
 }
