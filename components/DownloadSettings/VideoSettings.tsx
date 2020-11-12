@@ -18,15 +18,23 @@ export function VideoSettings(props: VideoSettingsProps) {
     });
   }
 
+  const formats = ["avi", "flv", "mkv", "mp4", "webm"];
+
   return (
     <Form.Group>
       <Form.Label>Format</Form.Label>
       <Form.Control
-        type="text"
-        value={props.settings.format}
+        as="select"
+        custom
         onChange={(e) => update("format", e.target.value)}
-        placeholder="mp4"
-      ></Form.Control>
+        value={props.settings.format}
+      >
+        {formats.map((f) => (
+          <option key={f} selected={props.settings.format === f}>
+            {f}
+          </option>
+        ))}
+      </Form.Control>
     </Form.Group>
   );
 }

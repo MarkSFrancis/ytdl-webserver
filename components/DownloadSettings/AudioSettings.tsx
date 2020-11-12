@@ -18,15 +18,33 @@ export function AudioSettings(props: AudioSettingsProps) {
     });
   }
 
+  const formats = [
+    "aac",
+    "flac",
+    "flv",
+    "m4a",
+    "mp3",
+    "ogg",
+    "opus",
+    "wav",
+    "webm",
+  ];
+
   return (
     <Form.Group>
       <Form.Label>Format</Form.Label>
       <Form.Control
-        type="text"
-        value={props.settings.format}
+        as="select"
+        custom
         onChange={(e) => update("format", e.target.value)}
-        placeholder="mp3"
-      ></Form.Control>
+        value={props.settings.format}
+      >
+        {formats.map((f) => (
+          <option key={f} selected={props.settings.format === f}>
+            {f}
+          </option>
+        ))}
+      </Form.Control>
     </Form.Group>
   );
 }
