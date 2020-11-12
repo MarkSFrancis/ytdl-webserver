@@ -6,8 +6,12 @@ import {
   DownloadSubtitlesOptions,
   DownloadVideoOptions,
 } from "../utils/types";
-import { youtubeToStream } from "./convert";
-import { setAttachment } from "./convert/filename";
+import { setAttachment, youtubeToStream } from "./convert";
+import {
+  cleanupSubsFolder,
+  getSubsSaveDirectory,
+  sendSubsStream,
+} from "./subtitles";
 import { ConversionType } from "./types";
 
 export async function update() {
@@ -47,22 +51,31 @@ export async function downloadSubtitles(
   options: DownloadSubtitlesOptions
 ) {
   const metadata = await getMetadata(url);
+  const startAt = new Date(1605213600438);
+  const downloadAuto = options.language?.toLowerCase() === "auto";
+  const subsDir = await getSubsSaveDirectory(startAt);
+
   return await new Promise((resolve, reject) => {
-    resolve();
-    // youtubedl.getSubs(
-    //   url,
-    //   {
-    //     lang: options.language || "en",
-    //   },
-    //   (err, output) => {
-    //     if (err) reject(err);
-    //     else {
-    //       setAttachment(res, metadata, options.format);
-    //       res.send(new Blob(output));
-    //       resolve();
-    //     }
-    //   }
-    // );
+    youtubedl.getSubs(
+      url,
+      {
+        lang: !downloadAuto && options.language,
+        auto: downloadAuto,
+        cwd: subsDir,
+      },
+      (err) => {
+        if (err) reject(err);
+        else {
+          setAttachment(res, metadata, "zip");
+          sendSubsStream(startAt, res)
+            .then(() => cleanupSubsFolder(startAt))
+            .then(() => {
+              resolve();
+            })
+            .catch(reject);
+        }
+      }
+    );
   });
 }
 

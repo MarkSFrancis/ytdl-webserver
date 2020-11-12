@@ -35,7 +35,7 @@ export function SubtitlesSettings(props: SubtitlesSettingsProps) {
           type="text"
           value={props.settings.format}
           onChange={(e) => update("format", e.target.value)}
-          placeholder="srt"
+          placeholder="vtt"
         ></Form.Control>
       </Form.Group>
     </>
