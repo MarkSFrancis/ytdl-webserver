@@ -24,7 +24,7 @@ export function DownloadSettings(props: DownloadSettingsProps) {
 
   return (
     <Tabs
-      defaultActiveKey={DownloadType.Audio}
+      defaultActiveKey={props.settings.mode || DownloadType.Audio}
       onSelect={(t: DownloadType) => update("mode", t)}
     >
       <Tab
