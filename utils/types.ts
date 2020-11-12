@@ -14,5 +14,4 @@ export interface DownloadVideoOptions {
 
 export interface DownloadSubtitlesOptions {
   language?: string;
-  format?: string;
 }

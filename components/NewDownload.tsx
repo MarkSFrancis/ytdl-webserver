@@ -1,20 +1,17 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import validator from "validator";
+import { DownloadAudioOptions, DownloadSubtitlesOptions, DownloadVideoOptions } from '../api/types';
 import { DownloadSettings } from "./DownloadSettings";
 import { DownloadType, useSettingsStore } from "./utils/hooks/settingsStorage";
 
-export interface DownloadFormProps {
-  onDownloadAudio: (url: string, format?: string) => void;
-  onDownloadVideo: (url: string, format?: string) => void;
-  onDownloadSubtitles: (
-    url: string,
-    language?: string,
-    format?: string
-  ) => void;
+export interface NewDownloadProps {
+  onDownloadAudio: (url: string, options?: DownloadAudioOptions) => void;
+  onDownloadVideo: (url: string, options?: DownloadVideoOptions) => void;
+  onDownloadSubtitles: (url: string, options?: DownloadSubtitlesOptions) => void;
 }
 
-export function NewDownload(props: DownloadFormProps) {
+export function NewDownload(props: NewDownloadProps) {
   const [url, setUrl] = useState("");
   const [settings, setSettings] = useSettingsStore();
   const [isValid, setIsValid] = useState(false);
@@ -37,21 +34,17 @@ export function NewDownload(props: DownloadFormProps) {
     switch (settings.settings.mode) {
       case DownloadType.Audio: {
         const audioSettings = settings.settings.audio;
-        props.onDownloadAudio(url, audioSettings?.format);
+        props.onDownloadAudio(url, audioSettings);
         break;
       }
       case DownloadType.Video: {
         const videoSettings = settings.settings.video;
-        props.onDownloadVideo(url, videoSettings?.format);
+        props.onDownloadVideo(url, videoSettings);
         break;
       }
       case DownloadType.Subs: {
         const subSettings = settings.settings.subs;
-        props.onDownloadSubtitles(
-          url,
-          subSettings?.language,
-          subSettings?.format
-        );
+        props.onDownloadSubtitles(url, subSettings);
         break;
       }
     }

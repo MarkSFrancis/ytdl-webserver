@@ -29,15 +29,6 @@ export function SubtitlesSettings(props: SubtitlesSettingsProps) {
           placeholder="en"
         ></Form.Control>
       </Form.Group>
-      <Form.Group>
-        <Form.Label>Format</Form.Label>
-        <Form.Control
-          type="text"
-          value={props.settings.format}
-          onChange={(e) => update("format", e.target.value)}
-          placeholder="srt"
-        ></Form.Control>
-      </Form.Group>
     </>
   );
 }

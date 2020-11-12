@@ -49,23 +49,16 @@ export function IndexPage() {
       });
   }
 
-  function downloadAudio(url: string, format?: string) {
-    download(url, "audio", {
-      format,
-    });
+  function downloadAudio(url: string, options?: DownloadAudioOptions) {
+    download(url, "audio", options);
   }
 
-  function downloadVideo(url: string, format?: string) {
-    download(url, "video", {
-      format,
-    });
+  function downloadVideo(url: string, options?: DownloadVideoOptions) {
+    download(url, "video", options);
   }
 
-  function downloadSubtitles(url: string, language?: string, format?: string) {
-    download(url, "subtitles", {
-      format,
-      language,
-    });
+  function downloadSubtitles(url: string, options?: DownloadSubtitlesOptions) {
+    download(url, "subtitles", options);
   }
 
   const footerHeight = "56px";
@@ -78,7 +71,10 @@ export function IndexPage() {
         <Container>
           <Jumbotron
             className="d-flex justify-content-center"
-            style={{ minHeight: `calc(100vh - ${footerHeight})`, marginBottom: footerHeight }}
+            style={{
+              minHeight: `calc(100vh - ${footerHeight})`,
+              marginBottom: footerHeight,
+            }}
           >
             <div className="d-flex flex-column" style={{ flexBasis: "500px" }}>
               <div>
@@ -86,10 +82,10 @@ export function IndexPage() {
               </div>
               <div className="mt-4">
                 <NewDownload
-                  onDownloadAudio={(url, format) => downloadAudio(url, format)}
-                  onDownloadVideo={(url, format) => downloadVideo(url, format)}
-                  onDownloadSubtitles={(url, language, format) =>
-                    downloadSubtitles(url, language, format)
+                  onDownloadAudio={(url, options) => downloadAudio(url, options)}
+                  onDownloadVideo={(url, options) => downloadVideo(url, options)}
+                  onDownloadSubtitles={(url, options) =>
+                    downloadSubtitles(url, options)
                   }
                 />
               </div>
