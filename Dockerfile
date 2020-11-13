@@ -14,6 +14,8 @@ RUN yarn --frozen-lockfile --non-interactive
 
 FROM node:lts-slim
 
+RUN apt-get update || : && apt-get install python -y
+
 WORKDIR /app
 
 ADD package.json ./
