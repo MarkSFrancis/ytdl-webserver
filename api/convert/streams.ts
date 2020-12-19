@@ -13,7 +13,7 @@ export async function youtubeToStream(
 ) {
   const videoStream = youtubedl(url, youtubedlArgs, {});
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     videoStream.on("error", (err) => {
       reject(err);
     });
@@ -33,7 +33,7 @@ export async function youtubeToStream(
           type: options.type,
         }
       )
-        .then((r) => resolve(r))
+        .then(() => resolve())
         .catch((e) => reject(e));
     } else {
       videoStream.pipe(output);

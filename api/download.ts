@@ -1,4 +1,4 @@
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import youtubedl from "youtube-dl";
 import downloader from "youtube-dl/lib/downloader";
 import {
@@ -15,12 +15,31 @@ import {
 import { ConversionType } from "./types";
 
 export async function update() {
-  return new Promise((resolve, reject) => {
+  console.log("Updating youtube-dl");
+
+  return new Promise<void>((resolve, reject) => {
     downloader((err) => {
       if (err) reject(err);
       else resolve();
     });
   });
+}
+
+export async function updateAndDownload(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  exec: () => Promise<void>
+) {
+  exec().catch(() =>
+    update()
+      .then(() => exec())
+      .catch((e: Error) => {
+        console.error("Error downloading", req.query, e);
+        res.statusCode = 500;
+        res.end(`An error occurred (${e.message})`);
+        res.destroy(e);
+      })
+  );
 }
 
 export function downloadAudio(
@@ -55,7 +74,7 @@ export async function downloadSubtitles(
   const downloadAuto = options.language?.toLowerCase() === "auto";
   const subsDir = await getSubsSaveDirectory(startAt);
 
-  return await new Promise((resolve, reject) => {
+  return await new Promise<void>((resolve, reject) => {
     youtubedl.getSubs(
       url,
       {

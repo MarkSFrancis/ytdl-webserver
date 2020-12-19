@@ -7,7 +7,7 @@ function sanitizeFilename(filename: string) {
   const sanitized = sanitize(filename);
 
   // Remove characters that are incompatible with the Content-Disposition header
-  return sanitized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return sanitized.normalize("NFD").replace(/[\u0300-\u036f]|\u2019/g, "");
 }
 
 export function getFilenameFromMeta(meta: youtubedl.Info, overrideExtension?: string) {
@@ -21,5 +21,6 @@ export function getFilenameFromMeta(meta: youtubedl.Info, overrideExtension?: st
 export function setAttachment(response: NextApiResponse, meta: youtubedl.Info, overrideExtension?: string) {
   const filename = getFilenameFromMeta(meta, overrideExtension);
 
+  console.log('filename', filename);
   attachment(response, filename);
 }
