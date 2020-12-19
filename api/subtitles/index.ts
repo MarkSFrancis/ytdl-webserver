@@ -19,7 +19,6 @@ export async function sendSubsStream(
   downloadStartedAt: Date,
   res: NextApiResponse
 ) {
-  console.log("Streaming subs to archive");
   const folder = await getSubsSaveDirectory(downloadStartedAt);
 
   return await archiveFolderAsStream(folder, (a) => a.pipe(res));
@@ -28,7 +27,7 @@ export async function sendSubsStream(
 export async function cleanupSubsFolder(downloadStartedAt: Date) {
   const folder = await getSubsSaveDirectory(downloadStartedAt);
 
-  return await new Promise((resolve, reject) =>
+  return await new Promise<void>((resolve, reject) =>
     rimraf(folder, (err) => (err ? reject(err) : resolve()))
   );
 }

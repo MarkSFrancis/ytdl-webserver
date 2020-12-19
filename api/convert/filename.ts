@@ -21,6 +21,5 @@ export function getFilenameFromMeta(meta: youtubedl.Info, overrideExtension?: st
 export function setAttachment(response: NextApiResponse, meta: youtubedl.Info, overrideExtension?: string) {
   const filename = getFilenameFromMeta(meta, overrideExtension);
 
-  console.log('filename', filename);
   attachment(response, filename);
 }

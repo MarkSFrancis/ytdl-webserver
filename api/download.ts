@@ -15,7 +15,7 @@ import {
 import { ConversionType } from "./types";
 
 export async function update() {
-  console.log("Updating youtube-dl");
+  console.info("Updating youtube-dl");
 
   return new Promise<void>((resolve, reject) => {
     downloader((err) => {
