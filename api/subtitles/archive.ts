@@ -17,7 +17,6 @@ export async function archiveFolderAsStream(
 
   setupStream(archive);
 
-  console.log('Adding subs', folderPath);
   for await (const file of getFilesRecursive(folderPath)) {
     const stream = fs.createReadStream(file);
     const name = getFilename(file);
