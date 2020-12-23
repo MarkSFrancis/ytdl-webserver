@@ -32,7 +32,7 @@ export function Footer() {
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://yt-dl.org/supportedsites.html"
+                href="https://ytdl-org.github.io/youtube-dl/supportedsites.html"
               >
                 Supported sites
               </a>
