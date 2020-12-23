@@ -32,8 +32,8 @@ export async function executeDownload(
   res: NextApiResponse,
   exec: () => Promise<void>
 ) {
-  // Delete downloads more than 1 week old
-  await clearDownloads(1000 * 60 * 60 * 24 * 7).catch((e) =>
+  // Delete downloads more than 1 day old
+  await clearDownloads(1000 * 60 * 60 * 24).catch((e) =>
     console.error("Error cleaning up old downloads", e)
   );
 
