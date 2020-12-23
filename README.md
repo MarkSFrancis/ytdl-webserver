@@ -57,7 +57,7 @@ Once you've installed the above, run the following to get started:
 git clone https://github.com/MarkSFrancis/ytdl-webserver.git
 cd ytdl-webserver
 yarn
-yarn start
+yarn dev
 ```
 
 # Legal Notice
