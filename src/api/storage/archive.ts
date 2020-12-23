@@ -1,8 +1,8 @@
-import archiver from "archiver";
-import { Readable } from "stream";
-import { getFilesRecursive } from "./files";
+import archiver from 'archiver';
+import { Readable } from 'stream';
 import fs from "fs";
-import path from "path";
+import { getFilesRecursive } from './files';
+import path from 'path';
 
 function getFilename(filePath: string) {
   const pathParts = filePath?.split(path.sep);
@@ -11,11 +11,10 @@ function getFilename(filePath: string) {
 
 export async function archiveFolderAsStream(
   folderPath: string,
-  setupStream: (stream: Readable) => void
-) {
+  setupStream: (stream: Readable) => Promise<void> | void
+): Promise<void> {
   const archive = archiver("zip");
-
-  setupStream(archive);
+  await setupStream(archive);
 
   for await (const file of getFilesRecursive(folderPath)) {
     const stream = fs.createReadStream(file);

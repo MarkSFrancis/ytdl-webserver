@@ -9,8 +9,9 @@ export interface ConversionStreams {
 export enum ConversionType {
   Audio = "audio",
   Video = "video",
+  Subs = "subs",
 }
-export type ConversionOptions = AudioConversion | VideoConversion;
+export type ConversionOptions = AudioConversion | VideoConversion | SubtitlesConversion;
 
 export interface VideoConversion {
   convertTo?: string;
@@ -20,4 +21,11 @@ export interface VideoConversion {
 export interface AudioConversion {
   convertTo: string;
   type: ConversionType.Audio;
+}
+
+export interface SubtitlesConversion {
+  language?: string[];
+  includeAuto: boolean;
+  format?: string;
+  type: ConversionType.Subs;
 }
