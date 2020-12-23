@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   downloadAudio,
-  updateAndDownload,
+  executeDownload,
 } from "../../../../api/download";
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  updateAndDownload(req, res, () =>
+  return executeDownload(req, res, () =>
     downloadAudio(req.query.url as string, res, req.body)
   );
 };

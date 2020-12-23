@@ -6,12 +6,8 @@ import {
   DownloadSubtitlesOptions,
   DownloadVideoOptions,
 } from "../utils/types";
-import { setAttachment, youtubeToStream } from "./convert";
-import {
-  cleanupSubsFolder,
-  getSubsSaveDirectory,
-  sendSubsStream,
-} from "./subtitles";
+import { clearDownloads } from "./storage/files";
+import { youtubeToStream } from "./streams";
 import { ConversionType } from "./types";
 
 export async function update() {
@@ -25,12 +21,23 @@ export async function update() {
   });
 }
 
-export async function updateAndDownload(
+/**
+ * Performs various cleanup and update actions before and after executing a download, as well as automatic retries when downloads fail
+ * @param req The HTTP request for the download
+ * @param res The HTTP response for the download
+ * @param exec The action to download the data
+ */
+export async function executeDownload(
   req: NextApiRequest,
   res: NextApiResponse,
   exec: () => Promise<void>
 ) {
-  exec().catch(() =>
+  // Delete downloads more than 1 week old
+  await clearDownloads(1000 * 60 * 60 * 24 * 7).catch((e) =>
+    console.error("Error cleaning up old downloads", e)
+  );
+
+  await exec().catch(() =>
     update()
       .then(() => exec())
       .catch((e: Error) => {
@@ -47,7 +54,7 @@ export function downloadAudio(
   res: NextApiResponse<Blob>,
   options: DownloadAudioOptions
 ) {
-  return youtubeToStream(url, res, {
+  return youtubeToStream(new Date(), url, res, {
     convertTo: options.format || "mp3",
     type: ConversionType.Audio,
   });
@@ -58,7 +65,7 @@ export async function downloadVideo(
   res: NextApiResponse<Blob>,
   options: DownloadVideoOptions
 ) {
-  return youtubeToStream(url, res, {
+  return youtubeToStream(new Date(), url, res, {
     convertTo: options.format,
     type: ConversionType.Video,
   });
@@ -69,32 +76,15 @@ export async function downloadSubtitles(
   res: NextApiResponse<Blob>,
   options: DownloadSubtitlesOptions
 ) {
-  const metadata = await getMetadata(url);
-  const startAt = new Date(1605213600438);
   const downloadAuto = options.language?.toLowerCase() === "auto";
-  const subsDir = await getSubsSaveDirectory(startAt);
-
-  return await new Promise<void>((resolve, reject) => {
-    youtubedl.getSubs(
-      url,
-      {
-        lang: !downloadAuto && options.language,
-        auto: downloadAuto,
-        cwd: subsDir,
-      },
-      (err) => {
-        if (err) reject(err);
-        else {
-          setAttachment(res, metadata, "zip");
-          sendSubsStream(startAt, res)
-            .then(() => cleanupSubsFolder(startAt))
-            .then(() => {
-              resolve();
-            })
-            .catch(reject);
-        }
-      }
-    );
+  return youtubeToStream(new Date(), url, res, {
+    includeAuto: downloadAuto,
+    language: downloadAuto
+      ? []
+      : options.language
+      ? [options.language]
+      : undefined,
+    type: ConversionType.Subs,
   });
 }
 

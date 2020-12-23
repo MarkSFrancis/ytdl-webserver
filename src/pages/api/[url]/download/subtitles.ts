@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { downloadSubtitles, updateAndDownload } from "../../../../api/download";
+import { downloadSubtitles, executeDownload } from "../../../../api/download";
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  updateAndDownload(req, res, () =>
+  return executeDownload(req, res, () =>
     downloadSubtitles(req.query.url as string, res, req.body)
   );
 };

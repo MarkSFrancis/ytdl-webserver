@@ -26,7 +26,7 @@ export function SubtitlesSettings(props: SubtitlesSettingsProps) {
           type="text"
           value={props.settings.language}
           onChange={(e) => update("language", e.target.value)}
-          placeholder="en"
+          placeholder="All languages"
         ></Form.Control>
       </Form.Group>
     </>
