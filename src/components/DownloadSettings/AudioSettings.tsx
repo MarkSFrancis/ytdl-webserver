@@ -39,8 +39,9 @@ export function AudioSettings(props: AudioSettingsProps) {
         onChange={(e) => update("format", e.target.value)}
         value={props.settings.format}
       >
+        <option value={""}>Best available</option>
         {formats.map((f) => (
-          <option key={f} selected={props.settings.format === f}>
+          <option value={f} key={f}>
             {f}
           </option>
         ))}

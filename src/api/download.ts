@@ -55,7 +55,7 @@ export function downloadAudio(
   options: DownloadAudioOptions
 ) {
   return youtubeToStream(new Date(), url, res, {
-    convertTo: options.format || "mp3",
+    convertTo: options.format || undefined,
     type: ConversionType.Audio,
   });
 }
@@ -66,7 +66,7 @@ export async function downloadVideo(
   options: DownloadVideoOptions
 ) {
   return youtubeToStream(new Date(), url, res, {
-    convertTo: options.format,
+    convertTo: options.format || undefined,
     type: ConversionType.Video,
   });
 }
