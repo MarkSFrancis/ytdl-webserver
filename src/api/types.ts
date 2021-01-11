@@ -19,7 +19,7 @@ export interface VideoConversion {
 }
 
 export interface AudioConversion {
-  convertTo: string;
+  convertTo?: string;
   type: ConversionType.Audio;
 }
 

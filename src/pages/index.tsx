@@ -11,11 +11,11 @@ import {
   DownloadAudioOptions,
   DownloadSubtitlesOptions,
   DownloadVideoOptions,
-  Video,
+  Video as Download,
 } from "../utils/types";
 
 export function IndexPage() {
-  const [downloads, setDownloads] = useState<Video[]>([]);
+  const [downloads, setDownloads] = useState<Download[]>([]);
 
   async function download(
     url: string,
@@ -25,23 +25,23 @@ export function IndexPage() {
       | DownloadAudioOptions
       | DownloadVideoOptions
   ) {
-    const newVideo: Video = {
+    const newDownload: Download = {
       id: +new Date(),
       url: url,
     };
 
-    setDownloads((videos) => [...videos, newVideo]);
+    setDownloads((downloads) => [...downloads, newDownload]);
 
     downloadPost(`/api/${encodeURIComponent(url)}/download/${type}`, body)
       .then(() => {
-        setDownloads((videos) => videos.filter((video) => video !== newVideo));
+        setDownloads((videos) => videos.filter((video) => video !== newDownload));
       })
       .catch((e: AxiosError) => {
-        setDownloads((videos) =>
-          videos.map((v) => {
-            if (v !== newVideo) return v;
+        setDownloads((downloads) =>
+          downloads.map((d) => {
+            if (d !== newDownload) return d;
             return {
-              ...v,
+              ...d,
               error: e.message,
             };
           })

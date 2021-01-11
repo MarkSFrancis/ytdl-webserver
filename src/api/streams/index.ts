@@ -47,14 +47,11 @@ function getYoutubedlArgs(
 
   switch (options.type) {
     case ConversionType.Audio:
-      typeArgs = [
-        "-f bestaudio",
-        "-x",
-        "--audio-format",
-        options.convertTo,
-        "--audio-quality",
-        "0",
-      ];
+      typeArgs = ["-f bestaudio", "-x", "--audio-quality", "0"];
+
+      if (options.convertTo) {
+        typeArgs = [...typeArgs, "--audio-format", options.convertTo];
+      }
       break;
     case ConversionType.Video:
       typeArgs = ["-f", "best"];
