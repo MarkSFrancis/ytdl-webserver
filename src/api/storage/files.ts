@@ -2,7 +2,11 @@ import { existsSync, promises as fs } from "fs";
 import path from "path";
 import rimraf from "rimraf";
 
-export const downloadsDirectory = path.resolve(process.cwd(), ".temp", "downloads");
+export const downloadsDirectory = path.resolve(
+  process.cwd(),
+  ".temp",
+  "downloads"
+);
 
 /**
  * Gets the folder in which downloads started on a specific date will be stored
@@ -38,7 +42,9 @@ export async function clearDownloads(maxAgeMs = 0) {
     return;
   }
 
-  const subfolders = await fs.readdir(downloadsDirectory, { withFileTypes: true });
+  const subfolders = await fs.readdir(downloadsDirectory, {
+    withFileTypes: true,
+  });
   const deleteBefore = +new Date() - maxAgeMs;
 
   const oldSubFolders = subfolders.filter((s) => {
@@ -80,4 +86,32 @@ export async function* getFilesRecursive(
       yield subPath;
     }
   }
+}
+
+/**
+ * Fixes the format of downloaded files, e.g. including replacing `_` with ` `
+ * @param startedOn The date on which the download started
+ */
+export async function fixDownloadedFilenames(startedOn: Date) {
+  const folder = getDownloadFolder(startedOn);
+  for (const filePath in getFilesRecursive(folder)) {
+    await fixDownloadedFilename(filePath);
+  }
+}
+
+/**
+ * Fixes the format of downloaded files, e.g. including replacing `_` with ` `
+ * @param filePath The path to fix
+ */
+export function fixDownloadedFilename(filePath: string) {
+  const dirname = path.dirname(filePath);
+  const extname = path.extname(filePath);
+  const basename = path.basename(filePath, extname);
+
+  const cleanedBasename = basename.replaceAll(/_/, " ");
+  if (cleanedBasename === basename) {
+    return;
+  }
+
+  return fs.rename(filePath, path.join(dirname, `${cleanedBasename}${extname}`));
 }

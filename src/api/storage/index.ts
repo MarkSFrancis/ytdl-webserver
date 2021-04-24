@@ -4,6 +4,8 @@ import { archiveFolderAsStream } from "./archive";
 import { basename } from "path";
 import { getDownloadFolder, getFilesRecursive } from "./files";
 
+export { fixDownloadedFilenames } from "./files";
+
 export async function getStorageDirectory(downloadStartedAt: Date) {
   const dir = getDownloadFolder(downloadStartedAt);
   if (!pathExists(dir)) {
