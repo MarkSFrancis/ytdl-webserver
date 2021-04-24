@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   DownloadAudioOptions,
   DownloadSubtitlesOptions,
@@ -43,7 +43,9 @@ export function useSettingsStore(
     [storageKey]
   );
 
-  const [settings, setSettings] = useState<SavedSettings>(() => loadSettings());
+  const [settings, setSettings] = useState<SavedSettings>(defaultSettings);
+
+  useEffect(() => setSettings(loadSettings()), []);
 
   const updateSettings = useCallback((patch: Partial<SavedSettings>) => {
     setSettings((settings) => {
