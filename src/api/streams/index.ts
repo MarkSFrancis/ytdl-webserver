@@ -1,6 +1,10 @@
 import { NextApiResponse } from "next";
 import youtubedl from "youtube-dl";
-import { getStorageDirectory, streamFolderOrFile } from "../storage";
+import {
+  fixDownloadedFilenames,
+  getStorageDirectory,
+  streamFolderOrFile,
+} from "../storage";
 import { ConversionOptions, ConversionType } from "../types";
 import { attachment } from "../utils";
 import pathToFfmpeg from "ffmpeg-static";
@@ -31,6 +35,8 @@ export async function youtubeToStream(
       }
     });
   });
+
+  await fixDownloadedFilenames(downloadStartedAt);
 
   await streamFolderOrFile(outputDirectory, (s, filename) => {
     attachment(res, filename);
