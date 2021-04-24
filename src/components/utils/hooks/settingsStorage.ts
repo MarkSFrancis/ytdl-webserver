@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   DownloadAudioOptions,
   DownloadSubtitlesOptions,
@@ -11,50 +11,51 @@ export enum DownloadType {
   Subs = "Subtitles",
 }
 
-export interface SettingsStore {
-  settings: SavedSettings;
-}
-
 export interface SavedSettings {
-  audio?: DownloadAudioOptions;
-  video?: DownloadVideoOptions;
-  subs?: DownloadSubtitlesOptions;
-  mode?: DownloadType;
+  audio: DownloadAudioOptions;
+  video: DownloadVideoOptions;
+  subs: DownloadSubtitlesOptions;
+  mode: DownloadType;
 }
 
-export function useSettingsStore(): [
-  SettingsStore,
-  (settings: Partial<SavedSettings>) => void
-] {
-  const [settings, setSettings] = useState<{ settings: SavedSettings }>();
-
+export function useSettingsStore(
+  defaultSettings?: SavedSettings
+): [SavedSettings, (settings: Partial<SavedSettings>) => void] {
   const storageKey = "downloadSettings";
-  function loadSettings(): SavedSettings | undefined {
+
+  const loadSettings = useCallback(() => {
+    let stored: Partial<SavedSettings> = {};
     const textSettings = localStorage.getItem(storageKey);
     if (textSettings) {
-      return JSON.parse(textSettings) as SavedSettings;
+      stored = JSON.parse(textSettings) as SavedSettings;
     }
-  }
 
-  function saveSettings(settings: SavedSettings) {
-    localStorage.setItem(storageKey, JSON.stringify(settings));
-  }
+    return {
+      ...defaultSettings,
+      ...(stored ?? {}),
+    };
+  }, [defaultSettings, storageKey]);
 
-  useEffect(() => setSettings({ settings: loadSettings() || {} }), []);
+  const saveSettings = useCallback(
+    (settings: SavedSettings) => {
+      localStorage.setItem(storageKey, JSON.stringify(settings));
+    },
+    [storageKey]
+  );
 
-  function updateSettings(patch: Partial<SavedSettings>) {
+  const [settings, setSettings] = useState<SavedSettings>(() => loadSettings());
+
+  const updateSettings = useCallback((patch: Partial<SavedSettings>) => {
     setSettings((settings) => {
       const newSettings = {
-        ...(settings?.settings || {}),
+        ...settings,
         ...patch,
       };
 
       saveSettings(newSettings);
-      return {
-        settings: newSettings,
-      };
+      return newSettings;
     });
-  }
+  }, []);
 
   return [settings, updateSettings];
 }

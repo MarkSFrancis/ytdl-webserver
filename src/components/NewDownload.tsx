@@ -1,19 +1,32 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import validator from "validator";
-import { DownloadAudioOptions, DownloadSubtitlesOptions, DownloadVideoOptions } from '../api/types';
+import {
+  DownloadAudioOptions,
+  DownloadSubtitlesOptions,
+  DownloadVideoOptions,
+} from "../api/types";
 import { DownloadSettings } from "./DownloadSettings";
 import { DownloadType, useSettingsStore } from "./utils/hooks/settingsStorage";
 
 export interface NewDownloadProps {
   onDownloadAudio: (url: string, options?: DownloadAudioOptions) => void;
   onDownloadVideo: (url: string, options?: DownloadVideoOptions) => void;
-  onDownloadSubtitles: (url: string, options?: DownloadSubtitlesOptions) => void;
+  onDownloadSubtitles: (
+    url: string,
+    options?: DownloadSubtitlesOptions
+  ) => void;
 }
 
 export function NewDownload(props: NewDownloadProps) {
   const [url, setUrl] = useState("");
-  const [settings, setSettings] = useSettingsStore();
+  const [settings, setSettings] = useSettingsStore({
+    audio: {},
+    video: {},
+    subs: {},
+    mode: DownloadType.Audio,
+  });
+
   const [isValid, setIsValid] = useState(false);
 
   function validate() {
@@ -29,21 +42,22 @@ export function NewDownload(props: NewDownloadProps) {
   }, [url]);
 
   function startDownload(e: FormEvent) {
+    console.log("Starting download", { settings: settings });
     e.preventDefault();
 
-    switch (settings.settings.mode) {
+    switch (settings.mode) {
       case DownloadType.Audio: {
-        const audioSettings = settings.settings.audio;
+        const audioSettings = settings.audio;
         props.onDownloadAudio(url, audioSettings);
         break;
       }
       case DownloadType.Video: {
-        const videoSettings = settings.settings.video;
+        const videoSettings = settings.video;
         props.onDownloadVideo(url, videoSettings);
         break;
       }
       case DownloadType.Subs: {
-        const subSettings = settings.settings.subs;
+        const subSettings = settings.subs;
         props.onDownloadSubtitles(url, subSettings);
         break;
       }
@@ -67,13 +81,11 @@ export function NewDownload(props: NewDownloadProps) {
         </Form.Group>
         <Form.Group className="mt-3">
           <Form.Label>Settings</Form.Label>
-          {settings && (
-            <DownloadSettings
-              settings={settings.settings}
-              onSettingsChanged={(s) => setSettings(s)}
-              isValid={isValid}
-            />
-          )}
+          <DownloadSettings
+            settings={settings}
+            onSettingsChanged={(s) => setSettings(s)}
+            isValid={isValid}
+          />
         </Form.Group>
       </div>
     </Form>

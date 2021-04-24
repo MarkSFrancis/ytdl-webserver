@@ -94,7 +94,7 @@ export async function* getFilesRecursive(
  */
 export async function fixDownloadedFilenames(startedOn: Date) {
   const folder = getDownloadFolder(startedOn);
-  for (const filePath in getFilesRecursive(folder)) {
+  for await (const filePath of getFilesRecursive(folder)) {
     await fixDownloadedFilename(filePath);
   }
 }
@@ -108,10 +108,13 @@ export function fixDownloadedFilename(filePath: string) {
   const extname = path.extname(filePath);
   const basename = path.basename(filePath, extname);
 
-  const cleanedBasename = basename.replaceAll(/_/, " ");
+  const cleanedBasename = basename.replace(/_/g, " ");
   if (cleanedBasename === basename) {
     return;
   }
 
-  return fs.rename(filePath, path.join(dirname, `${cleanedBasename}${extname}`));
+  return fs.rename(
+    filePath,
+    path.join(dirname, `${cleanedBasename}${extname}`)
+  );
 }
